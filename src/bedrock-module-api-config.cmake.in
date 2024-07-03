@@ -16,4 +16,6 @@ find_dependency (nlohmann_json)
 
 check_required_components(bedrock-module-api)
 
+add_library (bedrock::module-api ALIAS bedrock-module-api)
+
 include ("${CMAKE_CURRENT_LIST_DIR}/bedrock-module-api-targets.cmake")
