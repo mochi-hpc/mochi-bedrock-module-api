@@ -1,0 +1,19 @@
+#
+# bedrock-module-api-config.cmake.in
+#
+
+set(BEDROCK_MODULE_API_VERSION @BEDROCK_MODULE_API_VERSION@)
+
+@PACKAGE_INIT@
+
+set_and_check(BEDROCK_MODULE_API_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+include (CMakeFindDependencyMacro)
+find_dependency (thallium)
+find_dependency (spdlog)
+find_dependency (fmt)
+find_dependency (nlohmann_json)
+
+check_required_components(bedrock-module-api)
+
+include ("${CMAKE_CURRENT_LIST_DIR}/bedrock-module-api-targets.cmake")

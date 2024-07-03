@@ -1,0 +1,13 @@
+spack:
+  specs:
+  - cmake
+  - mochi-thallium
+  - nlohmann-json
+  - spdlog
+  concretizer:
+    unify: true
+    reuse: true
+  modules:
+    prefix_inspections:
+      lib: [LD_LIBRARY_PATH]
+      lib64: [LD_LIBRARY_PATH]
