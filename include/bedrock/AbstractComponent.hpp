@@ -160,14 +160,12 @@ class AbstractComponent {
     /**
      * @brief Restores the state of the designated component.
      *
-     * @param component Component to snapshot.
      * @param src_path Source directory.
      * @param options_json JSON-formatted parameters.
      */
-    virtual void restoreComponent(
-            void* component, const std::string& src_path,
+    virtual void restore(
+            const std::string& src_path,
             const char* options_json) {
-        (void)component;
         (void)src_path;
         (void)options_json;
         throw Exception{"Restore not supported for this component"};
