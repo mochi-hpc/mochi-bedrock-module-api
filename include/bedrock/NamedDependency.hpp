@@ -32,10 +32,10 @@ class NamedDependency {
     public:
 
     template<typename T>
-    NamedDependency(std::string name, std::string type, T handle)
+    NamedDependency(std::string name, std::string type, T&& handle)
     : m_name(std::move(name))
     , m_type(std::move(type))
-    , m_handle(reinterpret_cast<void*>(handle)) {}
+    , m_handle(std::forward(handle)) {}
 
     NamedDependency(NamedDependency&& other) = default;
 
@@ -58,7 +58,6 @@ class NamedDependency {
     std::string                m_name;
     std::string                m_type;
     void*                      m_handle;
-    std::function<void(void*)> m_release;
 };
 
 class ProviderDependency : public NamedDependency {
