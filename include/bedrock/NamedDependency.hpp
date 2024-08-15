@@ -35,7 +35,7 @@ class NamedDependency {
     NamedDependency(std::string name, std::string type, T&& handle)
     : m_name(std::move(name))
     , m_type(std::move(type))
-    , m_handle(std::forward(handle)) {}
+    , m_handle(std::forward<T>(handle)) {}
 
     NamedDependency(NamedDependency&& other) = default;
 
