@@ -92,7 +92,7 @@ std::shared_ptr<AbstractComponent> ModuleManager::createComponent(
     return it->second(args);
 }
 
-std::vector<Dependency> getDependencies(
+std::vector<Dependency> ModuleManager::getDependencies(
         const std::string& modName, const ComponentArgs& args) {
     auto it = s_get_dep_fn.find(modName);
     if(it == s_get_dep_fn.end()) {
