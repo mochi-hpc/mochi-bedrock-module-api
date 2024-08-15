@@ -1,7 +1,6 @@
 # set source files
 set (lib-src-files
-     ModuleContext.cpp
-     Module.cpp)
+     ModuleManager.cpp)
 
 # load package helper for generating cmake CONFIG packages
 include (CMakePackageConfigHelpers)

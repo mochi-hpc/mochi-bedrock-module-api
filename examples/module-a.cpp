@@ -6,20 +6,18 @@
 #include <bedrock/AbstractComponent.hpp>
 #include <iostream>
 
-struct ActualProviderA;
+struct ActualProviderA {};
 
-struct ActualProviderB {};
+class ComponentA : public bedrock::AbstractComponent {
 
-class ComponentB : public bedrock::AbstractComponent {
-
-    ActualProviderB* m_provider = nullptr;
+    ActualProviderA* m_provider = nullptr;
 
     public:
 
-    ComponentB()
-    : m_provider{new ActualProviderB{}} {}
+    ComponentA()
+    : m_provider{new ActualProviderA{}} {}
 
-    ~ComponentB() {
+    ~ComponentA() {
         delete m_provider;
     }
 
@@ -35,27 +33,14 @@ class ComponentB : public bedrock::AbstractComponent {
             std::cout << std::endl;
             auto pool_it = args.dependencies.find("pool");
             auto pool = pool_it->second[0]->getHandle<thallium::pool>();
-            std::cout << " -> pool = " << pool.native_handle() << std::endl;
-            auto a_provider_it = args.dependencies.find("a_provider");
-            auto a_provider = a_provider_it->second[0]->getHandle<ActualProviderA*>();
-            std::cout << " -> a_provider = " << a_provider << std::endl;
-            auto a_ph_it = args.dependencies.find("a_provider_handles");
-            int i = 0;
-            for(auto& p : a_ph_it->second) {
-                auto ph = p->getHandle<thallium::provider_handle*>();
-                std::cout << " -> a_provider_handles[" << i << "] = " <<
-                    static_cast<std::string>(*ph) << " with provider id " << ph->provider_id() << std::endl;
-            }
-            return std::make_shared<ComponentB>();
+            return std::make_shared<ComponentA>();
     }
 
     static std::vector<bedrock::Dependency>
         GetDependencies(const bedrock::ComponentArgs& args) {
         (void)args;
         std::vector<bedrock::Dependency> deps = {
-            { "pool", "pool", true, false, false },
-            { "a_provider", "module_a", true, false, false },
-            { "a_provider_handles", "module_a", false, true, false }
+            { "pool", "pool", true, false, false }
         };
         return deps;
     }
@@ -65,4 +50,4 @@ class ComponentB : public bedrock::AbstractComponent {
     }
 };
 
-BEDROCK_REGISTER_COMPONENT_TYPE(module_a, ComponentB)
+BEDROCK_REGISTER_COMPONENT_TYPE(module_a, ComponentA)

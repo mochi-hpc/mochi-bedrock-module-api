@@ -9,26 +9,33 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <any>
 
 namespace bedrock {
 
 /**
  * @brief NamedDependency is a parent class for any object
  * that can be a dependency to another one, including providers,
- * provider handles, clients, SSG groups, ABT-IO instances,
- * Argobots pools, etc.
+ * provider handles, Argobots pools, etc.
  *
  * It abstract their internal handle as a void* with a
  * release function to call when the dependency is no longer used.
+ *
+ * If the dependency is an Argobots pool, getHandle<thallium::pool> can be used.
+ * If the dependency is an Argobots xstream, getHandle<thallium::xstream> can be used.
+ * If the dependency is a provider handle, getHandle<thallium::provider_handle> can be used.
+ * If the dependency is a provider, the handle will contain the result of getHandle() called
+ * on that provider's Bedrock module (so it will be called as getHandle<void*>() then
+ * re-cast into an appropriate pointer for the underlying provider).
  */
 class NamedDependency {
 
     public:
 
-    using ReleaseFn = std::function<void(void*)>;
+    using ReleaseFn = std::function<void(std::any)>;
 
     template<typename T>
-    NamedDependency(std::string name, std::string type, T handle, ReleaseFn release)
+    NamedDependency(std::string name, std::string type, T handle, ReleaseFn release = ReleaseFn{})
     : m_name(std::move(name))
     , m_type(std::move(type))
     , m_handle(reinterpret_cast<void*>(handle))
@@ -55,7 +62,7 @@ class NamedDependency {
     }
 
     template<typename H> H getHandle() const {
-        return reinterpret_cast<H>(m_handle);
+        return std::any_cast<H>(m_handle);
     }
 
     protected:
