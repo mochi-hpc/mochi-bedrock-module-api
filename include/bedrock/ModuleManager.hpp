@@ -68,6 +68,18 @@ class ModuleManager {
      * @brief Return the current JSON configuration.
      */
     static std::string getCurrentConfig();
+
+    /**
+     * @brief Create a component from the designated module.
+     */
+    static std::shared_ptr<AbstractComponent> createComponent(
+        const std::string& modName, const ComponentArgs& args);
+
+    /**
+     * @brief Get the dependencies for a designated module.
+     */
+    static std::vector<Dependency> getDependencies(
+        const std::string& modName, const ComponentArgs& args);
 };
 
 } // namespace bedrock
