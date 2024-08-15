@@ -55,9 +55,9 @@ class NamedDependency {
 
     protected:
 
-    std::string                m_name;
-    std::string                m_type;
-    void*                      m_handle;
+    std::string m_name;
+    std::string m_type;
+    std::any    m_handle;
 };
 
 class ProviderDependency : public NamedDependency {
