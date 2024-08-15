@@ -174,6 +174,8 @@ class AbstractComponent {
     }
 };
 
+using ComponentPtr = std::shared_ptr<AbstractComponent>;
+
 } // namespace bedrock
 
 #define BEDROCK_REGISTER_COMPONENT_TYPE(__module_name, __component_type) \

@@ -24,34 +24,22 @@ namespace bedrock {
  * If the dependency is an Argobots pool, getHandle<thallium::pool> can be used.
  * If the dependency is an Argobots xstream, getHandle<thallium::xstream> can be used.
  * If the dependency is a provider handle, getHandle<thallium::provider_handle> can be used.
- * If the dependency is a provider, the handle will contain the result of getHandle() called
- * on that provider's Bedrock module (so it will be called as getHandle<void*>() then
- * re-cast into an appropriate pointer for the underlying provider).
+ * If the dependency is a provider, the handle will contain a ComponentPtr,
+ * from which ->getHandle() can be called to get the underlying actual handle to a provider (as a void*).
  */
 class NamedDependency {
 
     public:
 
-    using ReleaseFn = std::function<void(std::any)>;
-
     template<typename T>
-    NamedDependency(std::string name, std::string type, T handle, ReleaseFn release = ReleaseFn{})
+    NamedDependency(std::string name, std::string type, T handle)
     : m_name(std::move(name))
     , m_type(std::move(type))
-    , m_handle(reinterpret_cast<void*>(handle))
-    , m_release(std::move(release)) {}
+    , m_handle(reinterpret_cast<void*>(handle)) {}
 
-    NamedDependency(NamedDependency&& other)
-    : m_name(std::move(other.m_name))
-      , m_handle(other.m_handle)
-      , m_release(std::move(other.m_release)) {
-          other.m_handle = nullptr;
-          other.m_release = ReleaseFn{};
-      }
+    NamedDependency(NamedDependency&& other) = default;
 
-    virtual ~NamedDependency() {
-        if(m_release) m_release(m_handle);
-    }
+    virtual ~NamedDependency() = default;
 
     const std::string& getName() const {
         return m_name;
@@ -78,8 +66,8 @@ class ProviderDependency : public NamedDependency {
     public:
 
     template<typename T>
-    ProviderDependency(std::string name, std::string type, T handle, ReleaseFn release, uint16_t provider_id)
-    : NamedDependency(std::move(name), std::move(type), std::move(handle), std::move(release))
+    ProviderDependency(std::string name, std::string type, T handle, uint16_t provider_id)
+    : NamedDependency(std::move(name), std::move(type), std::move(handle))
     , m_provider_id(provider_id) {}
 
     uint16_t getProviderID() const {
