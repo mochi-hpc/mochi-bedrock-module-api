@@ -6,6 +6,7 @@
 #ifndef __BEDROCK_NAMED_DEPENDENCY_H
 #define __BEDROCK_NAMED_DEPENDENCY_H
 
+#include <bedrock/Exception.hpp>
 #include <string>
 #include <memory>
 #include <functional>
@@ -50,7 +51,13 @@ class NamedDependency {
     }
 
     template<typename H> H getHandle() const {
-        return std::any_cast<H>(m_handle);
+        try {
+            return std::any_cast<H>(m_handle);
+        } catch(const std::bad_cast& ex) {
+            throw Exception{
+                "Could not cast NamedDependency \"{}\" (type should be \"{}\")",
+                getName(), getType()};
+        }
     }
 
     protected:
