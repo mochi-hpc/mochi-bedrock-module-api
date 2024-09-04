@@ -58,14 +58,15 @@ bool ModuleManager::loadModule(const std::string& library) {
 void ModuleManager::loadModulesFromJSON(const std::string& jsonString) {
     auto libraries = json::parse(jsonString);
     if (libraries.is_null()) return;
-    if (libraries.is_string()) loadModule(libraries.get_ref<const std::string&>());
-    if (libraries.is_array()) {
+    else if (libraries.is_array()) {
         for(auto& lib : libraries) {
             if(!lib.is_string()) {
                 throw BEDROCK_DETAILED_EXCEPTION("Module library should be a string");
             }
         }
         for(auto& lib : libraries) loadModule(lib.get_ref<const std::string&>());
+    } else {
+        throw BEDROCK_DETAILED_EXCEPTION("\"libraries\" field needs to be an array");
     }
 }
 
