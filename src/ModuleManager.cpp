@@ -35,7 +35,7 @@ bool ModuleManager::registerModule(const std::string&  moduleName,
 bool ModuleManager::loadModule(const std::string& library) {
     if (std::find(s_loaded_libraries.begin(),
                   s_loaded_libraries.end(),
-                  library) ==  s_loaded_libraries.end()) {
+                  library) !=  s_loaded_libraries.end()) {
         return false;
     }
     spdlog::trace("Loading module(s) from library {}", library);
