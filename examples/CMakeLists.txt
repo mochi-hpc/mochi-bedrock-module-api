@@ -1,4 +1,4 @@
-add_library (example-module-a ${CMAKE_CURRENT_SOURCE_DIR}/module-a.c)
+add_library (example-module-a ${CMAKE_CURRENT_SOURCE_DIR}/module-a.cpp)
 target_include_directories (example-module-a PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_link_libraries (example-module-a bedrock-module-api)
 

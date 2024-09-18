@@ -6,45 +6,41 @@
 #ifndef __BEDROCK_NAMED_DEPENDENCY_H
 #define __BEDROCK_NAMED_DEPENDENCY_H
 
+#include <bedrock/Exception.hpp>
 #include <string>
 #include <memory>
 #include <functional>
+#include <any>
 
 namespace bedrock {
 
 /**
  * @brief NamedDependency is a parent class for any object
  * that can be a dependency to another one, including providers,
- * provider handles, clients, SSG groups, ABT-IO instances,
- * Argobots pools, etc.
+ * provider handles, Argobots pools, etc.
  *
  * It abstract their internal handle as a void* with a
  * release function to call when the dependency is no longer used.
+ *
+ * If the dependency is an Argobots pool, getHandle<thallium::pool> can be used.
+ * If the dependency is an Argobots xstream, getHandle<thallium::xstream> can be used.
+ * If the dependency is a provider handle, getHandle<thallium::provider_handle> can be used.
+ * If the dependency is a provider, the handle will contain a ComponentPtr,
+ * from which ->getHandle() can be called to get the underlying actual handle to a provider (as a void*).
  */
 class NamedDependency {
 
     public:
 
-    using ReleaseFn = std::function<void(void*)>;
-
     template<typename T>
-    NamedDependency(std::string name, std::string type, T handle, ReleaseFn release)
+    NamedDependency(std::string name, std::string type, T&& handle)
     : m_name(std::move(name))
     , m_type(std::move(type))
-    , m_handle(reinterpret_cast<void*>(handle))
-    , m_release(std::move(release)) {}
+    , m_handle(std::forward<T>(handle)) {}
 
-    NamedDependency(NamedDependency&& other)
-    : m_name(std::move(other.m_name))
-      , m_handle(other.m_handle)
-      , m_release(std::move(other.m_release)) {
-          other.m_handle = nullptr;
-          other.m_release = ReleaseFn{};
-      }
+    NamedDependency(NamedDependency&& other) = default;
 
-    virtual ~NamedDependency() {
-        if(m_release) m_release(m_handle);
-    }
+    virtual ~NamedDependency() = default;
 
     const std::string& getName() const {
         return m_name;
@@ -55,15 +51,20 @@ class NamedDependency {
     }
 
     template<typename H> H getHandle() const {
-        return reinterpret_cast<H>(m_handle);
+        try {
+            return std::any_cast<H>(m_handle);
+        } catch(const std::bad_cast& ex) {
+            throw Exception{
+                "Could not cast NamedDependency \"{}\" (type should be \"{}\")",
+                getName(), getType()};
+        }
     }
 
     protected:
 
-    std::string                m_name;
-    std::string                m_type;
-    void*                      m_handle;
-    std::function<void(void*)> m_release;
+    std::string m_name;
+    std::string m_type;
+    std::any    m_handle;
 };
 
 class ProviderDependency : public NamedDependency {
@@ -71,8 +72,8 @@ class ProviderDependency : public NamedDependency {
     public:
 
     template<typename T>
-    ProviderDependency(std::string name, std::string type, T handle, ReleaseFn release, uint16_t provider_id)
-    : NamedDependency(std::move(name), std::move(type), std::move(handle), std::move(release))
+    ProviderDependency(std::string name, std::string type, T handle, uint16_t provider_id)
+    : NamedDependency(std::move(name), std::move(type), std::move(handle))
     , m_provider_id(provider_id) {}
 
     uint16_t getProviderID() const {
