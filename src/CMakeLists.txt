@@ -13,6 +13,7 @@ set (bedrock-module-api-vers "${BEDROCK_MODULE_API_VERSION_MAJOR}.${BEDROCK_MODU
 
 # library
 add_library (bedrock-module-api ${lib-src-files})
+target_compile_features (bedrock-module-api PUBLIC cxx_std_17)
 add_library (bedrock::module-api ALIAS bedrock-module-api)
 target_compile_options (bedrock-module-api PRIVATE -Wall -Wextra -Wpedantic)
 target_link_libraries (bedrock-module-api
