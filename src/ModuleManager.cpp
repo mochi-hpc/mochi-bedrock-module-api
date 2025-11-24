@@ -87,8 +87,7 @@ std::shared_ptr<AbstractComponent> ModuleManager::createComponent(
     auto it = s_register_fn.find(modName);
     if(it == s_register_fn.end()) {
         throw bedrock::Exception{
-            std::string{"Could not find registration function for module \""}
-            + modName + "\""};
+            "Could not find registration function for module \"{}\"", modName};
     }
     return it->second(args);
 }
@@ -98,8 +97,7 @@ std::vector<Dependency> ModuleManager::getDependencies(
     auto it = s_get_dep_fn.find(modName);
     if(it == s_get_dep_fn.end()) {
         throw bedrock::Exception{
-            std::string{"Could not find registration function for module \""}
-            + modName + "\""};
+            "Could not find registration function for module \"{}\"", modName};
     }
     return it->second(args);
 }

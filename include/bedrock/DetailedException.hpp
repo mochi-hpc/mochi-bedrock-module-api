@@ -17,8 +17,8 @@ class DetailedException : public Exception {
     public:
 
     template<typename ... Args>
-    DetailedException(int line, const char* filename, Args&& ... args)
-    : Exception(std::forward<Args>(args)...)
+    DetailedException(int line, const char* filename, const fmt::format_string<Args...>& str, Args&& ... args)
+    : Exception(str, std::forward<Args>(args)...)
     , m_location(std::string(filename) + ":" + std::to_string(line)) {}
 
 

@@ -24,8 +24,8 @@ class Exception : public std::exception {
     Exception& operator=(const Exception& other) = default;
 
     template <typename... Args>
-    Exception(Args&&... args)
-    : m_error(fmt::format(std::forward<Args>(args)...)) {}
+    Exception(const fmt::format_string<Args...>& str, Args&&... args)
+    : m_error(fmt::format(str, std::forward<Args>(args)...)) {}
 
     virtual const char* what() const noexcept override {
         return m_error.c_str();
